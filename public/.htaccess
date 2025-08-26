@@ -1,0 +1,38 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+
+    # Przekierowanie wszystkich żądań do index.html, jeśli plik/katalog nie istnieje
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/api
+    RewriteCond %{REQUEST_URI} !^/sanctum
+    RewriteCond %{REQUEST_URI} !^/exam
+    RewriteRule ^(.*)$ /index.html [L]
+
+    # Przekierowanie żądań do /api/* do api/index.php, dodając przedrostek /api/
+    RewriteCond %{REQUEST_URI} ^/api(.*)$
+    RewriteRule ^api(.*)$ /index.php [L,QSA]
+    RewriteCond %{REQUEST_URI} ^/sanctum(.*)$
+    RewriteRule ^sanctum(.*)$ /index.php [L,QSA]
+    RewriteCond %{REQUEST_URI} ^/exam(.*)$
+    RewriteRule ^exam(.*)$ /index.php [L,QSA]
+</IfModule>
